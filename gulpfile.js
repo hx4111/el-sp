@@ -13,3 +13,7 @@ gulp.task('webpack', function(callback) {
         console.log(stats.toString());
     });
 })
+
+gulp.task('debug', () => {
+    run('node_modules/babel-cli/bin/babel-node.js --debug --presets es2015 -- main.js --debug')
+})

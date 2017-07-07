@@ -12,22 +12,20 @@ export default class App extends React.Component {
         this.state = {
             logs: ''
         }
-
     }
 
-    componetDidMount() {
+    componentDidMount() {
         let request = {
             option: {
-                url: 'www.baidu.com'
+                url: 'http://www.baidu.com'
             }
         }
-        let spider = new Spider(...request)
-
-        spider.run().then(res => {
+        let spider = new Spider(request)
+        spider.run().then( res => {
             this.setState({
                 logs: res
             })
-        }) 
+        })
     }
 
     render() {
