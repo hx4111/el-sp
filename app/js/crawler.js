@@ -4,22 +4,19 @@ import request from 'request'
 
 class Crawler {
 
-    async getHtmlByUrl(url) {
-        http.get(url, (res) => {
-            let resData = ''
+    getHtmlByUrl(url) {
+        return new Promise((resolve, reject) => {
+            http.get(url, (res) => {
+                let resData = ''
 
-            res.on('data', chunk => {
-                resData += chunk
+                res.on('data', chunk => {
+                    resData += chunk
+                })
+                res.on('end', () => {
+                    resolve(resData)
+                })
             })
-            
-            await res.on('end', () => {
-                return resData
-            })
-
-            await res.on('error', (err) => {
-                return err
-            })
-        })
+        }) 
     }
 
     findPages(obj) {
@@ -68,18 +65,22 @@ class Crawler {
         let pageList = []
         let archiveUrl = obj.url + 'archive'
         pageList.push(archiveUrl)
+        obj.archiveUrl = archiveUrl
+        findNextPage(obj, pageList).then( pagelist => {
 
-
-        
+        })
     }
 
     findNextPage(obj, pagelist) {
-        getHtmlByUrl(obj.url).then( html => {
+        return getHtmlByUrl(obj.archiveUrl).then( html => {
             let $ = cheerio.load(html)
             let href = $('#next_page_link').attr('href')
             if (/archivebefore_time=(.*?)/.test(href)) {
                 if (RegExp.$1) {
-                    pagelist.push(obj.url + 'archive' + RegExp.$1)
+                    let archiveUrl = obj.url + 'archive' + RegExp.$1
+                    pagelist.push(archiveUrl)
+                    obj.archiveUrl = archiveUrl
+                    return findNextPage(obj, pagelist)
                 }
             } else {
                 return pagelist
